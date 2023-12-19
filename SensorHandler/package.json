@@ -1,0 +1,15 @@
+{
+    "name": "hadi",
+    "version": "1.0.0",
+    "description": "hadi-1",
+    "main": "index.js",
+    "dependencies": {
+      "express": "^4.17.1",
+      "body-parser": "^1.19.0",
+      "mongodb": "^4.4.0"
+    },
+    "engines": {
+      "node": "20.x"
+    }
+  }
+  
