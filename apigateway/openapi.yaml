@@ -1,0 +1,218 @@
+swagger: "2.0"
+info:
+  title: Api Gateway Rest API
+  description: Rest API for data retrieval and status checking
+  version: 1.0.0
+host: 'us-central1-arcane-dolphin-400020.cloudfunctions.net'
+basePath: '/'
+schemes:
+  - https
+  - http
+paths:
+  /getData:
+    get:
+      summary: Retrieves sensor data
+      operationId: getData
+      x-google-backend:
+        address: https://us-central1-arcane-dolphin-400020.cloudfunctions.net/Serverless-getData-1
+      parameters:
+        - name: sensorId
+          in: query
+          description: ID of the sensor to retrieve data for
+          required: false
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+              default: 'https://website-xmh5u4hxaa-uc.a.run.app'
+            Access-Control-Allow-Methods:
+              type: string
+              default: 'GET, OPTIONS'
+            Access-Control-Allow-Headers:
+              type: string
+              default: 'Content-Type'
+          schema:
+            type: object
+            properties:
+              _id:
+                type: string
+              sensor_001:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  temp_value:
+                    type: number
+                  temp_threshold:
+                    type: number
+                  smoke_sensor:
+                    type: integer
+                  led_status:
+                    type: string
+                  water_extinguisher_status:
+                    type: string
+                  buzzer_status:
+                    type: string
+                  datetime:
+                    type: string
+                    format: date-time
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
+
+  /getStatus:
+    get:
+      summary: Retrieves the status of the system
+      operationId: getStatus
+      x-google-backend:
+        address: https://finalservice-xmh5u4hxaa-uc.a.run.app/data
+      responses:
+        '200':
+          description: Successful response
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+              default: 'https://website-xmh5u4hxaa-uc.a.run.app'
+            Access-Control-Allow-Methods:
+              type: string
+              default: 'GET, OPTIONS'
+            Access-Control-Allow-Headers:
+              type: string
+              default: 'Content-Type'
+          schema:
+            type: object
+            properties:
+              Last Time Online:
+                type: string
+              Sensor Status:
+                type: string
+              Last Critical Condition:
+                type: string
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
+
+  /graphql:
+    post:
+      summary: Executes GraphQL query to fetch sensor data
+      operationId: executeGraphQLQuery
+      x-google-backend:
+        address: https://finalservice-xmh5u4hxaa-uc.a.run.app/graphql
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: query
+          description: GraphQL query for retrieving sensor data
+          required: true
+          schema:
+            type: object
+            required:
+              - query
+            properties:
+              query:
+                type: string
+                example: |
+                  query {
+                    getAllSensorData {
+                      data {
+                        temp_sensor {
+                          value
+                          datetime
+                        }
+                        smoke_sensor {
+                          smoke_sensor
+                          datetime
+                        }
+                        buzzer {
+                          buzzer_status
+                          datetime
+                        }
+                        led {
+                          led_status
+                          datetime
+                        }
+                      }
+                    }
+                  }
+      responses:
+        '200':
+          description: Successful response
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+              default: 'https://website-xmh5u4hxaa-uc.a.run.app'
+            Access-Control-Allow-Methods:
+              type: string
+              default: 'POST, OPTIONS'
+            Access-Control-Allow-Headers:
+              type: string
+              default: 'Content-Type'
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/SensorData'
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+
+definitions:
+  TempSensor:
+    type: object
+    properties:
+      value:
+        type: number
+        format: float
+      datetime:
+        type: string
+        format: date-time
+
+  SmokeSensor:
+    type: object
+    properties:
+      smoke_sensor:
+        type: boolean
+      datetime:
+        type: string
+        format: date-time
+
+  Buzzer:
+    type: object
+    properties:
+      buzzer_status:
+        type: boolean
+      datetime:
+        type: string
+        format: date-time
+
+  LED:
+    type: object
+    properties:
+      led_status:
+        type: boolean
+      datetime:
+        type: string
+        format: date-time
+
+  SensorData:
+    type: object
+    properties:
+      temp_sensor:
+        $ref: '#/definitions/TempSensor'
+      smoke_sensor:
+        $ref: '#/definitions/SmokeSensor'
+      buzzer:
+        $ref: '#/definitions/Buzzer'
+      led:
+        $ref: '#/definitions/LED'
