@@ -4,7 +4,7 @@ const { ApolloServer, gql } = require('apollo-server-express');
 const cors = require('cors');
 
 // MongoDB setup
-const mongoUri = 'mongodb+srv://hadi:hadi@hadi.zfp4gcd.mongodb.net/hadi?retryWrites=true&w=majority';
+const mongoUri = '';
 const app = express();
 const port = 3000;
 
